@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:e="http://entities.br"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition template="./template.xhtml">
+            <ui:define name="subheader">
+                <f:view locale="#{context.currentLocale}">
+                    <h:form>
+                        <rich:toolBar>
+                            <rich:dropDownMenu value="#{i18n['menu.label.main']}">
+                                <e:menuItems/>
+                            </rich:dropDownMenu>
+
+                            <rich:dropDownMenu value="#{i18n['menu.label.setup']}">
+                                <rich:menuItem value="#{i18n['menu.label.theme']}">
+                                    <e:themes>
+                                        <f:selectItem itemLabel="Violet Rays" itemValue="violetRays" />
+                                        <f:selectItem itemLabel="UECE" itemValue="uecePadrao" />
+                                        <f:selectItem itemLabel="Blank" itemValue="avalereBlank" />
+                                    </e:themes>
+                                </rich:menuItem>
+                                <rich:menuItem value="#{i18n['menu.label.skin']}">
+                                    <e:skins/>
+                                </rich:menuItem>
+                                <rich:menuItem value="#{i18n['menu.label.i18n']}">
+                                    <e:languages/>
+                                </rich:menuItem>
+                            </rich:dropDownMenu>
+                        </rich:toolBar>
+                    </h:form>
+                </f:view>
+            </ui:define>
+
+            <ui:define name="sidebar">
+                <h:panelGroup>
+                    <ul>
+                        <li>
+                            <h2>#{i18n['menu.label.main']}</h2>
+                            <ul class="blocklist">
+                                <e:liMenuItems/>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <h2>#{i18n['menu.label.setup']}</h2>
+                            <ul class="blocklist">
+                                <f:view locale="#{context.currentLocale}">
+                                    <h:form>
+                                        <li>
+                                            <e:themes>
+                                                <f:selectItem itemLabel="Violet Rays" itemValue="violetRays" />
+                                                <f:selectItem itemLabel="UECE" itemValue="uecePadrao" />
+                                                <f:selectItem itemLabel="Blank" itemValue="avalereBlank" />
+                                            </e:themes>
+                                        </li>
+                                        <li><e:skins/></li>                                                                                
+                                        <li>
+                                            <e:languages/>
+                                        </li>
+                                    </h:form>
+                                </f:view>
+                            </ul>
+                        </li>
+                    </ul>
+                </h:panelGroup>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:panelGroup rendered="#{empty autoEntityBackBean.entity}">
+                    <br/><br/>
+                    <e:welcome/>
+                    <br/><br/>
+                </h:panelGroup>
+
+                <e:view />
+            </ui:define>
+
+        </ui:composition>
+    </body>
+</html>

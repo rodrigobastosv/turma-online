@@ -1,0 +1,46 @@
+1.Instalar Netbeans
+ 1.1. Configurar tomcat (-XX:MaxPermSize=512m -Xmx950m)
+
+2.Instalar Entities-Blank
+  2.1.Baixar Entities-Blank de http://entitiesframework.blogspot.com
+  2.2.Configurar banco de dados
+      a.Iniciar javadb
+      b.Criar banco de dados
+      c.Configurar datasource no context.xml
+  2.3.run
+
+3.Personalisar Aplicação
+  3.0. Escolher Template (smooth ou monotype) (web.xml)
+       <context-param>
+           <param-name>br.entities.THEME</param-name>
+           <param-value>smooth</param-value>
+       </context-param>
+
+       <context-param>
+           <param-name>org.richfaces.SKIN</param-name>
+           <param-value>blueSky</param-value>
+       </context-param>
+
+  3.1. Modificar i18n
+       application.name=SISO - Sistema Odontológico de Quixadá
+       application.version=1.0
+       application.copyRight=NP - Núcleo de Práticas de Quixadá
+
+  3.2. Modificar tela de boas vindas
+       a.Criar pasta img e Copiar logo (logo.jpg)
+       b.Modificar tela de boas vindas (main.xhtml)
+         <div class="post">
+            <center>
+               <h1 class="title">Bem vindo ao</h1>
+               <h:graphicImage url="img/logo.jpg"/>
+               <div class="entry">
+                  <p>Nome do Sistema</p>
+               </div>
+            </center>
+         </div>
+
+       c.Modificar shocut (template.xhtml)
+         <link rel="shortcut icon"
+              type="image/x-icon"
+              href="img/logo.jpg" />
+  3.3. Run

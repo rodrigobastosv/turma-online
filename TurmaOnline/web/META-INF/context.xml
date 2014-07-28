@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/TurmaOnline">
+  <!-- Java db -->
+  <Resource auth="Container" description="JavaDB for Turma Online" driverClassName="org.apache.derby.jdbc.ClientDriver" maxActive="20" maxIdle="10" maxWait="-1" name="jdbc/ds-blank" password="turmaonlinebd" type="javax.sql.DataSource" url="jdbc:derby://localhost:1527/turmaonlinebd" username="turmaonlinebd"/>
+  <!-- Postgres
+    <Resource auth="Container"
+    driverClassName="org.postgresql.Driver"
+    maxActive="20"
+    maxIdle="10"
+    maxWait="-1"
+    name="jdbc/datasource"
+    password="postgres"
+    type="javax.sql.DataSource"
+    url="jdbc:postgresql://localhost:5432/postgres"
+    username="postgres"/>-->
+</Context>
