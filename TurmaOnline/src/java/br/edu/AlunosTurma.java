@@ -8,8 +8,6 @@ package br.edu;
 
 import entities.Context;
 import entities.Repository;
-import entities.annotations.Param;
-import entities.annotations.ParameterDescriptor;
 import entities.annotations.PropertyDescriptor;
 import entities.annotations.View;
 import entities.annotations.Views;
@@ -34,14 +32,28 @@ import javax.persistence.NamedQuery;
                      + " Where t.codigoTurma = :codigoTurma ")})
 @Views({    
 /**
- * Cadastro de turmas
+ * Turmas do professor
  */
-@View(name = "MinhasTurmasTA",
+/*@View(name = "MinhasTurmasTA",
      title = "Minhas Turmas TA",
    members = "AlunosTurma[turma.codigoTurma;"
            + "  turma.nomeTurma;enviarEmail();]",
+  namedQuery = "From br.edu.AlunosTurma at where at.turma.usuario = :user",
+  params = {@Param(name = "user", value = "#{context.currentUser}")},
   template = "@TABLE+@PAGER",
-  roles = "Professor"),
+  roles = "Professor"),*/
+    
+/**
+ * Turmas do Aluno
+ */
+@View(name = "MinhasDisciplinas",
+     title = "Minhas Disciplinas",
+   members = "AlunosTurma[turma.codigoTurma;"
+           + "  turma.nomeTurma;"
+           + "  quantidadeAtividade, quantidadeFalta;"
+           + "  enviarEmail(),enviarArquivo();]",
+  template = "@TABLE+@PAGER",
+  roles = "Aluno"),
         
 /**
  * Aluno se cadastrando na turma
@@ -93,24 +105,28 @@ public class AlunosTurma implements Serializable {
         
         List<Turma> turmas = Repository.query("ConsultarTurma", turma.getCodigoTurma());
         
+                
          if (turmas.size() == 1) {
+            Turma turmaDoAluno = turmas.get(0);
             Usuario usu = (Usuario) Context.getCurrentUser();
-            AlunosTurma alunoTurma = new AlunosTurma(turmas.get(0),usu, matricula);
+            AlunosTurma alunoTurma = new AlunosTurma(turmaDoAluno,usu, matricula);
             Repository.save(alunoTurma);
+            turmaDoAluno.setQtdAlunos(turmaDoAluno.getQtdAlunos()+1);
+            Repository.save(turmaDoAluno);
             //return "go:domain.User@Users";
         }else {
             throw new SecurityException("Turma não encontrada");
         }
          
-        return "go:home";
+        return "go:br.edu.AlunosTurma@MinhasDisciplinas";
     }
     
     public String enviarEmail() {
-        return "go:MinhasTurmasTA";
+        return "go:home";
     }
     
     public String enviarArquivo() {
-        return "go:MinhasTurmasTA";
+        return "go:br.edu.Arquivo@EnviarAtividade";
     }
 
     public Integer getId() {
