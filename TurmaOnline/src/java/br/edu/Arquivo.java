@@ -13,7 +13,6 @@ import entities.annotations.View;
 import entities.annotations.Views;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,27 +35,29 @@ import javax.validation.constraints.Past;
                      + " Where at.turma.codigoTurma = :codigoTurma ")})
 @Views({
 /**
- * Professor enviando conteúdo para a turma
+ * Professor enviando conteúdo para a turma TESTE
  */
 @View(name = "EnviarConteudo",
      title = "Enviar conteúdo",
-    members = "Arquivo[Turma[#turma.codigoTurma];Arquivo[#arquivo];enviarConteudo()]",
+    members = "Arquivo[#arquivo;enviarConteudo()]",
     namedQuery = "Select new br.edu.Arquivo()",
-    roles = "Professor"),
+    roles = "Professor",
+    hidden = true),
 /**
  * Aluno enviando conteúdo para a turma
  */
 @View(name = "EnviarAtividade",
      title = "Enviar atividade",
-    members = "Arquivo[Turma[#turma.codigoTurma];Arquivo[#arquivo];enviarAtividade()]",
+    members = "Arquivo[#arquivo;enviarAtividade()]",
     namedQuery = "Select new br.edu.Arquivo()",
-    roles = "Aluno"),
+    roles = "Aluno",
+    hidden = true),
 /**
 * Minhas Turmas
 */
 @View(name = "MeusConteudos",
      title = "Meus conteúdos",
-    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio;novoConteudo();]",
+    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio]",
     namedQuery = "From br.edu.Arquivo a where a.usuario = :user",
     params = {@Param(name = "user", value = "#{context.currentUser}")},
     template = "@TABLE+@PAGE",
@@ -66,7 +67,7 @@ import javax.validation.constraints.Past;
 */
 @View(name = "MinhasAtividades",
      title = "Minhas atividades",
-    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio;novaAtividade();]",
+    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio;]",
     namedQuery = "From br.edu.Arquivo a where a.usuario = :user",
     params = {@Param(name = "user", value = "#{context.currentUser}")},
     template = "@TABLE+@PAGE",
@@ -103,47 +104,29 @@ public class Arquivo implements Serializable {
     
     public String enviarAtividade() {
         
-        List<AlunosTurma> alunosTurma = Repository.query("ConsultarAlunoTurma", turma.getCodigoTurma());        
         
-         if (alunosTurma.size() == 1) {
-            AlunosTurma alunoTurma = alunosTurma.get(0);
-            Usuario usu = (Usuario) Context.getCurrentUser();
-            Arquivo arquivoNovo = new Arquivo(arquivo, alunoTurma.getTurma(),usu);
-            Repository.save(arquivoNovo);
-            alunoTurma.setQuantidadeAtividade(alunoTurma.getQuantidadeAtividade()+1);
-            Repository.save(alunoTurma);
-        }else {
-            throw new SecurityException("Turma não encontrada");
-        }
+        AlunosTurma alunoTurmaContext = (AlunosTurma) Context.getValue("alunoTurmaContext");
+        Usuario usu = (Usuario) Context.getCurrentUser();
+        Arquivo arquivoNovo = new Arquivo(arquivo, alunoTurmaContext.getTurma(),usu);
+        Repository.save(arquivoNovo);
+        alunoTurmaContext.setQuantidadeAtividade(alunoTurmaContext.getQuantidadeAtividade()+1);
+        Repository.save(alunoTurmaContext);              
          
-        return "go:home";
+        return "go:br.edu.Arquivo@MinhasAtividades";
     }
     
     public String enviarConteudo() {
-        
-        List<Turma> turmas = Repository.query("ConsultarTurma", turma.getCodigoTurma());        
-        
-         if (turmas.size() == 1) {
-            Turma turmaDoAluno = turmas.get(0);
-            Usuario usu = (Usuario) Context.getCurrentUser();
-            Arquivo arquivoNovo = new Arquivo(arquivo, turmaDoAluno,usu);
-            Repository.save(arquivoNovo);
-            turmaDoAluno.setQtdConteudos(turmaDoAluno.getQtdConteudos()+1);
-            Repository.save(turmaDoAluno);
-        }else {
-            throw new SecurityException("Turma não encontrada");
-        }
+                
+        Turma turmaContext = (Turma) Context.getValue("turmaContext");
+                
+        Usuario usu = (Usuario) Context.getCurrentUser();
+        Arquivo arquivoNovo = new Arquivo(arquivo, turmaContext,usu);
+        Repository.save(arquivoNovo);
+        turmaContext.setQtdConteudos(turmaContext.getQtdConteudos()+1);
+        Repository.save(turmaContext);       
          
         return "go:br.edu.Arquivo@MeusConteudos";
-    }
-    
-    public String novoConteudo(){
-        return "go:br.edu.Arquivo@EnviarConteudo";
-    }
-    
-    public String novaAtividade(){
-        return "go:br.edu.Arquivo@EnviarAtividade";
-    }
+    }    
 
     public Integer getId() {
         return id;

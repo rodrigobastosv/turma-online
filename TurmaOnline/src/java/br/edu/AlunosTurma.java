@@ -31,19 +31,7 @@ import javax.persistence.NamedQuery;
     @NamedQuery(name = "ConsultarTurma",
                query = "  From Turma t"
                      + " Where t.codigoTurma = :codigoTurma ")})
-@Views({    
-/**
- * Turmas do professor
- */
-/*@View(name = "MinhasTurmasTA",
-     title = "Minhas Turmas TA",
-   members = "AlunosTurma[turma.codigoTurma;"
-           + "  turma.nomeTurma;enviarEmail();]",
-  namedQuery = "From br.edu.AlunosTurma at where at.turma.usuario = :user",
-  params = {@Param(name = "user", value = "#{context.currentUser}")},
-  template = "@TABLE+@PAGER",
-  roles = "Professor"),*/
-    
+@Views({
 /**
  * Turmas do Aluno
  */
@@ -52,11 +40,38 @@ import javax.persistence.NamedQuery;
    members = "AlunosTurma[turma.codigoTurma;"
            + "  turma.nomeTurma;"
            + "  quantidadeAtividade, quantidadeFalta;"
-           + "  enviarEmail(),enviarArquivo();]",
+           + "  enviarEmail(),enviarAtividade();]",
    namedQuery = "From br.edu.AlunosTurma atm where atm.usuario = :user",
    params = {@Param(name = "user", value = "#{context.currentUser}")},
   template = "@TABLE+@PAGER",
   roles = "Aluno"),
+/**
+ * Alunos da turma
+ */
+@View(name = "AlunosDaTurma",
+     title = "Alunos da turma",
+   members = "AlunosTurma[turma.nomeTurma,turma.codigoTurma;"
+           + "  usuario.nome;"
+           + "  quantidadeAtividade, quantidadeFalta;"
+           + "  enviarEmail(),enviarAtividade();]",
+   namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = 1",
+   //params = {@Param(name = "turma", value = "#{"+Context.getValue("turmaContext")+"}")},
+  template = "@TABLE+@PAGER",
+  roles = "Professor"),
+
+/**
+ * Alunos da turma
+ */
+@View(name = "AlunosDaTurmaOriginal",
+     title = "Alunos da turma",
+   members = "AlunosTurma[usuario.nome;turma.codigoTurma;"
+           + "  turma.nomeTurma;"
+           + "  quantidadeAtividade, quantidadeFalta;"
+           + "  enviarEmail(),enviarAtividade();]",
+   namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = 1",
+   //params = {@Param(name = "turma", value = "#{"+Context.getValue("turmaContext")+"}")},
+  template = "@TABLE+@PAGER",
+  roles = "Professor"),
         
 /**
  * Aluno se cadastrando na turma
@@ -128,7 +143,8 @@ public class AlunosTurma implements Serializable {
         return "go:home";
     }
     
-    public String enviarArquivo() {
+    public String enviarAtividade() {
+        Context.setValue("alunoTurmaContext", this);
         return "go:br.edu.Arquivo@EnviarAtividade";
     }
 
