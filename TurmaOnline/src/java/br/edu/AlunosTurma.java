@@ -8,6 +8,7 @@ package br.edu;
 
 import entities.Context;
 import entities.Repository;
+import entities.annotations.Param;
 import entities.annotations.PropertyDescriptor;
 import entities.annotations.View;
 import entities.annotations.Views;
@@ -52,6 +53,8 @@ import javax.persistence.NamedQuery;
            + "  turma.nomeTurma;"
            + "  quantidadeAtividade, quantidadeFalta;"
            + "  enviarEmail(),enviarArquivo();]",
+   namedQuery = "From br.edu.AlunosTurma atm where atm.usuario = :user",
+   params = {@Param(name = "user", value = "#{context.currentUser}")},
   template = "@TABLE+@PAGER",
   roles = "Aluno"),
         

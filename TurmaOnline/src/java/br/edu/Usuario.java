@@ -9,7 +9,6 @@ package br.edu;
 import entities.Context;
 import entities.Repository;
 import entities.annotations.Param;
-import entities.annotations.ParameterDescriptor;
 import entities.annotations.PropertyDescriptor;
 import entities.annotations.UserRoles;
 import entities.annotations.Username;
@@ -31,7 +30,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import org.apache.commons.lang.RandomStringUtils;
-import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  *
@@ -42,40 +40,53 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Entity
 @Table(name = "USUARIOS")
 @NamedQueries({
-    @NamedQuery(name = "Authentication",
+    @NamedQuery(name = "AutenticarUsuario",
                query = "  From Usuario u"
                      + " Where u.email = :email "
-                     + "   and u.senha = :senha ")})
+                     + "   and u.senha = :senha "),
+    @NamedQuery(name = "BuscarUsuario",
+               query = "  From Usuario u"
+                     + " Where u.email = :email ")})
 @Views({
     /**
-     * View de Login
+     * View de Entrar
      */
-    @View(name = "Login",
-         title = "Login",
-       members = "[#email;#senha;login();novoUsuario()]",
+    @View(name = "Entrar",
+         title = "Entrar",
+       members = "[#email;#senha;entrar();]",
+    namedQuery = "Select new br.edu.Usuario()",
+         roles = "NOLOGGED"),
+/**
+     * Cadastro de Usuarios
+     */
+    @View(name = "CadastrarSe",
+         title = "Cadastrar-se",
+       members = "Usuario[#nome;"
+               + "     #email;"
+               + "     #perfis:2;"
+               + "  salvar()]",
+      namedQuery = "Select new br.edu.Usuario()",
+      roles = "NOLOGGED"),
+    /**
+     * View de redefinir senha
+     */
+    @View(name = "RedefinirSenha",
+         title = "Redefinir Senha",
+       members = "[#email;redefinirSenha()]",
     namedQuery = "Select new br.edu.Usuario()",
          roles = "NOLOGGED"),
     /**
-     * View de Logout
+     * View de Sair
      */
-    @View(name = "Logout",
-         title = "Logout",
+    @View(name = "Sair",
+         title = "Sair",
        members = "[[*email;"
                + "            *perfis;"
-               + "            [newPassword(),logout()]]]",
+               + "            [sair()]]]",
     namedQuery = "From Usuario u Where u = :usuario",
         params = {@Param(name = "usuario", value = "#{context.currentUser}")},
-         roles = "LOGGED"),
-    /**
-     * Cadastro de Usuarios
-     */
-    @View(name = "Usuarios",
-         title = "Usuarios",
-       members = "Usuario[nome;"
-               + "     email;"
-               + "     perfis:2]",
-      template = "@CRUD",
-      roles = "LOGGED")
+         roles = "LOGGED")
+    
 })
 public class Usuario implements Serializable {
     
@@ -91,7 +102,7 @@ public class Usuario implements Serializable {
     
     @Username
     @Column(length = 100, unique = true)    
-    @NotEmpty(message = "Informe o e-mail")
+    //@NotEmpty(message = "Informe o e-mail")
     private String email;
     
     /*@PropertyDescriptor(displayName = "Sou Professor")
@@ -101,7 +112,7 @@ public class Usuario implements Serializable {
     private boolean perfilAluno;*/
     
     @Column(length = 8)
-    @NotEmpty(message = "Enter the password")
+    //@NotEmpty(message = "Enter the password")
     //@Type(type = "entities.security.Password")
     @PropertyDescriptor(secret = true, displayWidth = 25)    
     private String senha;
@@ -112,7 +123,7 @@ public class Usuario implements Serializable {
     private List<Perfil> perfis = new ArrayList<Perfil>();
     
     public Usuario(){
-        this.senha = RandomStringUtils.randomAlphanumeric(8);
+        //this.senha = RandomStringUtils.randomAlphanumeric(8);
     }
     
     public Usuario(String nome, String email, Perfil... perfis) {
@@ -123,9 +134,9 @@ public class Usuario implements Serializable {
     }
     
      // <editor-fold defaultstate="collapsed" desc="Autorização & Autenticação">    
-    public String login() {        
+    public String entrar() {        
         
-        List<Usuario> usuarios = Repository.query("Authentication", email, senha);
+        List<Usuario> usuarios = Repository.query("AutenticarUsuario", email, senha);
         if (usuarios.size() == 1) {
             Context.setCurrentUser(usuarios.get(0));
         }else {
@@ -135,33 +146,59 @@ public class Usuario implements Serializable {
         return "go:home";
     }
     
-    static public String logout() {
+    static public String sair() {
         Context.clear();
-        return "go:br.edu.Usuario@Login";
+        return "go:br.edu.Usuario@Entrar";
     }// </editor-fold>
     
-    public String novoUsuario(){
-        return "go:br.edu.Usuario@Usuarios";
+    public String cadastrar(){
+        List<Usuario> usuarios = Repository.query("BuscarUsuario", email);        
+        if (usuarios.size() <= 0) {
+            Usuario novoUsuario = new Usuario();
+            novoUsuario.setNome(nome);
+            novoUsuario.setPerfis(perfis);
+            novoUsuario.setSenha(RandomStringUtils.randomAlphanumeric(8));
+            Repository.save(novoUsuario);
+            //enviar email com a sua senha
+        }else {
+            throw new SecurityException("Usuário já cadastrado com o e-mail informado!");
+        }
+        return "go:br.edu.Usuario@Entrar";
     }
-    public String newPassword(){
-//     public String newPassword(
-//            @ParameterDescriptor(displayName = "New Password", 
-//                                      secret = true, 
-//                                    required = true) 
-//            String newPassword,
-//            @ParameterDescriptor(displayName = "Confirm password", 
-//                                      secret = true, 
-//                                    required = true) 
-//            String rePassword) {
-//        if (newPassword.equals(rePassword)) {
-//            this.setPassword(newPassword);            
-//            Repository.save(this);
-//            return "Password changed successfully!";
-//        } else {
-//            throw new SecurityException("The passwords are different!");
-//        }
-        return "";
-    }    
+    
+    public String salvar(){
+        
+        List<Usuario> usuarios = Repository.query("BuscarUsuario", email);        
+        if (usuarios.size() <= 0) {
+            Usuario novoUsuario = new Usuario();
+            novoUsuario.setEmail(email);
+            novoUsuario.setNome(nome);
+            novoUsuario.setPerfis(perfis);
+            novoUsuario.setSenha(RandomStringUtils.randomAlphanumeric(8));
+            Repository.save(novoUsuario);
+            //enviar email com a sua senha
+        }else {
+            throw new SecurityException("Usuário já cadastrado com o e-mail informado!");
+        }
+        return "go:br.edu.Usuario@Entrar";
+    }
+    public String EsqueciSenha(){
+        return "go:br.edu.Usuario@RedefinirSenha";
+    }
+    
+    public String redefinirSenha(){
+        List<Usuario> usuarios = Repository.query("BuscarUsuario", email);
+        if (usuarios.size() == 1) {
+            Usuario usu = usuarios.get(0);
+            usu.setSenha(RandomStringUtils.randomAlphanumeric(8));
+            Repository.save(usu);
+            //enviar email com a nova senha
+        }else {
+            throw new SecurityException("Usuário/Senha incorreto(s)!");
+        }
+                    
+        return "go:home";
+    }
     
      @Override
     public String toString() {
