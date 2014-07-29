@@ -39,7 +39,7 @@ import org.hibernate.validator.constraints.NotEmpty;
     */
    @View(name = "MinhasTurmas",
         title = "Minhas Turmas",
-      members = "Turma[codigoTurma;nomeTurma;qtdAlunos,qtdConteudos;enviarEmail(),enviarArquivo()]",
+      members = "Turma[codigoTurma;nomeTurma;qtdAlunos,qtdConteudos;enviarEmail(),enviarConteudo();alunosDaTurma();]",
       namedQuery = "From br.edu.Turma t where t.usuario = :user",
       params = {@Param(name = "user", value = "#{context.currentUser}")},
      template = "@TABLE+@PAGE",
@@ -97,8 +97,14 @@ public class Turma implements Serializable {
         return "go:home";
     }
     
-    public String enviarArquivo() {
+    public String enviarConteudo() {
+        Context.setValue("turmaContext", this);
         return "go:br.edu.Arquivo@EnviarConteudo";
+    }
+    
+    public String alunosDaTurma() {
+        Context.setValue("turmaContext", this);
+        return "go:br.edu.AlunosTurma@AlunosDaTurma";
     }
 
     public Integer getId() {
