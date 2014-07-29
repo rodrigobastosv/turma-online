@@ -74,7 +74,8 @@ import org.hibernate.validator.constraints.NotEmpty;
        members = "Usuario[nome;"
                + "     email;"
                + "     perfis:2]",
-      template = "@CRUD+@PAGER")
+      template = "@CRUD",
+      roles = "LOGGED")
 })
 public class Usuario implements Serializable {
     
@@ -128,7 +129,7 @@ public class Usuario implements Serializable {
         if (usuarios.size() == 1) {
             Context.setCurrentUser(usuarios.get(0));
         }else {
-            throw new SecurityException("Username/Password invalid!");
+            throw new SecurityException("Usuário/Senha incorreto(s)!");
         }
                     
         return "go:home";

@@ -12,7 +12,6 @@ import entities.annotations.Param;
 import entities.annotations.View;
 import entities.annotations.Views;
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,16 +39,18 @@ import org.hibernate.validator.constraints.NotEmpty;
     */
    @View(name = "MinhasTurmas",
         title = "Minhas Turmas",
-      members = "Turma[codigoTurma;nomeTurma]",
+      members = "Turma[codigoTurma;nomeTurma;qtdAlunos,qtdConteudos;enviarEmail(),enviarArquivo()]",
+      namedQuery = "From br.edu.Turma t where t.usuario = :user",
+      params = {@Param(name = "user", value = "#{context.currentUser}")},
      template = "@TABLE+@PAGE",
      roles = "Professor"),
     /**
      * Cadastro de turmas
      */
-    @View(name = "Turmas",
+    @View(name = "CadastrarTurmas",
          title = "Cadastrar Turmas",
        members = "Turmas[#nomeTurma];cadastrarTurma()",
-       namedQuery = "Select new br.edu.Turma()",
+       namedQuery = "Select new br.edu.Turma()",       
        roles = "Professor")
 })
 public class Turma implements Serializable {
@@ -63,6 +64,12 @@ public class Turma implements Serializable {
     @Column(length = 40)
     @NotEmpty(message = "Nome da turma não informado")
     private String nomeTurma;
+    
+    @Column(precision = 2)
+    private Integer qtdAlunos;
+    
+    @Column(precision = 2)
+    private Integer qtdConteudos;
     
     @ManyToOne(optional = false)
     private Usuario usuario;
@@ -83,7 +90,15 @@ public class Turma implements Serializable {
         novaTurma.setCodigoTurma(RandomStringUtils.randomAlphanumeric(6));               
         Repository.save(novaTurma);
 
+        return "go:br.edu.Turma@MinhasTurmas";
+    }
+    
+    public String enviarEmail() {
         return "go:home";
+    }
+    
+    public String enviarArquivo() {
+        return "go:br.edu.Arquivo@EnviarConteudo";
     }
 
     public Integer getId() {
@@ -116,6 +131,21 @@ public class Turma implements Serializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-    }        
-    
+    }
+
+    public Integer getQtdAlunos() {
+        return qtdAlunos;
+    }
+
+    public void setQtdAlunos(Integer qtdAlunos) {
+        this.qtdAlunos = qtdAlunos;
+    }
+
+    public Integer getQtdConteudos() {
+        return qtdConteudos;
+    }
+
+    public void setQtdConteudos(Integer qtdConteudos) {
+        this.qtdConteudos = qtdConteudos;
+    }    
 }
