@@ -22,7 +22,7 @@
     <!-- Início Configuração do Entities -->
     <context-param>
         <param-name>br.entities.THEME</param-name>
-        <param-value>brewedcoffee</param-value>
+        <param-value>uecePadrao</param-value>
     </context-param>
 
     <filter>

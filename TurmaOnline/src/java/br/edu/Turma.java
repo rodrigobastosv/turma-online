@@ -39,7 +39,7 @@ import org.hibernate.validator.constraints.NotEmpty;
     */
    @View(name = "MinhasTurmas",
         title = "Minhas Turmas",
-      members = "Turma[codigoTurma;nomeTurma;qtdAlunos,qtdConteudos;enviarEmail(),enviarConteudo();alunosDaTurma();]",
+      members = "Turma[codigoTurma;nomeTurma;qtdAlunos,qtdConteudos;enviarEmail(),enviarConteudo(),conteudosDaTurma();alunosDaTurma();]",
       namedQuery = "From br.edu.Turma t where t.usuario = :user",
       params = {@Param(name = "user", value = "#{context.currentUser}")},
      template = "@TABLE+@PAGE",
@@ -94,6 +94,7 @@ public class Turma implements Serializable {
     }
     
     public String enviarEmail() {
+        GMailBuilder.enviarEmailTeste();
         return "go:home";
     }
     
@@ -105,6 +106,11 @@ public class Turma implements Serializable {
     public String alunosDaTurma() {
         Context.setValue("turmaContext", this);
         return "go:br.edu.AlunosTurma@AlunosDaTurma";
+    }
+    
+    public String conteudosDaTurma(){
+        Context.setValue("alunoTurmaContext", this);
+        return "go:br.edu.Arquivo@ConteudosTurma";
     }
 
     public Integer getId() {

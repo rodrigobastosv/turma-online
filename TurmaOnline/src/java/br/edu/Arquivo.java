@@ -71,7 +71,17 @@ import javax.validation.constraints.Past;
     namedQuery = "From br.edu.Arquivo a where a.usuario = :user",
     params = {@Param(name = "user", value = "#{context.currentUser}")},
     template = "@TABLE+@PAGE",
-    roles = "Aluno")
+    roles = "Aluno"),
+/**
+* Conteúdos da turma
+*/
+@View(name = "ConteudosTurma",
+     title = "Conteúdos da turma",
+    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio;]",
+    namedQuery = "From br.edu.Arquivo a where a.turma = 1",
+    //params = {@Param(name = "turma", value = "#{context.currentUser}")},
+    template = "@TABLE+@PAGE",
+    roles = "Professor,Aluno")
 })
 public class Arquivo implements Serializable {
     
