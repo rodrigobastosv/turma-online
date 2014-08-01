@@ -26,7 +26,7 @@ public class GMailBuilder extends MailThread {
     }
 
     //public static void main(String[] args) {
-    public static void enviarEmailTeste(String[] args) {
+    public static void enviarEmailTeste() {
         GMailBuilder.getInstance().
                 setFromMail("turmaonline.edu@gmail.com", "Turma Online").
                 addToBcc("vitor.rifane@gmail.com").

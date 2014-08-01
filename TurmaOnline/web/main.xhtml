@@ -16,7 +16,7 @@
                                 <e:menuItems/>
                             </rich:dropDownMenu>
 
-                            <rich:dropDownMenu value="#{i18n['menu.label.setup']}">
+                            <!--<rich:dropDownMenu value="#{i18n['menu.label.setup']}">
                                 <rich:menuItem value="#{i18n['menu.label.theme']}">
                                     <e:themes>
                                         <f:selectItem itemLabel="Violet Rays" itemValue="violetRays" />
@@ -30,7 +30,7 @@
                                 <rich:menuItem value="#{i18n['menu.label.i18n']}">
                                     <e:languages/>
                                 </rich:menuItem>
-                            </rich:dropDownMenu>
+                            </rich:dropDownMenu>-->
                         </rich:toolBar>
                     </h:form>
                 </f:view>
@@ -46,7 +46,7 @@
                             </ul>
                         </li>
 
-                        <li>
+                        <!--<li>
                             <h2>#{i18n['menu.label.setup']}</h2>
                             <ul class="blocklist">
                                 <f:view locale="#{context.currentLocale}">
@@ -65,16 +65,16 @@
                                     </h:form>
                                 </f:view>
                             </ul>
-                        </li>
+                        </li>-->
                     </ul>
                 </h:panelGroup>
             </ui:define>
 
             <ui:define name="content">
                 <h:panelGroup rendered="#{empty autoEntityBackBean.entity}">
-                    <br/><br/>
+                    <!--<br/><br/>
                     <e:welcome/>
-                    <br/><br/>
+                    <br/><br/>-->
                 </h:panelGroup>
 
                 <e:view />

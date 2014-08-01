@@ -40,7 +40,8 @@ import javax.persistence.NamedQuery;
    members = "AlunosTurma[turma.codigoTurma;"
            + "  turma.nomeTurma;"
            + "  quantidadeAtividade, quantidadeFalta;"
-           + "  enviarEmail(),enviarAtividade();]",
+           + "  enviarEmail(),enviarAtividade();"
+           + "  alunosDaTurma(),conteudosDaTurma();]",
    namedQuery = "From br.edu.AlunosTurma atm where atm.usuario = :user",
    params = {@Param(name = "user", value = "#{context.currentUser}")},
   template = "@TABLE+@PAGER",
@@ -57,21 +58,8 @@ import javax.persistence.NamedQuery;
    namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = 1",
    //params = {@Param(name = "turma", value = "#{"+Context.getValue("turmaContext")+"}")},
   template = "@TABLE+@PAGER",
-  roles = "Professor"),
-
-/**
- * Alunos da turma
- */
-@View(name = "AlunosDaTurmaOriginal",
-     title = "Alunos da turma",
-   members = "AlunosTurma[usuario.nome;turma.codigoTurma;"
-           + "  turma.nomeTurma;"
-           + "  quantidadeAtividade, quantidadeFalta;"
-           + "  enviarEmail(),enviarAtividade();]",
-   namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = 1",
-   //params = {@Param(name = "turma", value = "#{"+Context.getValue("turmaContext")+"}")},
-  template = "@TABLE+@PAGER",
-  roles = "Professor"),
+  roles = "Professor,Aluno",
+  hidden = true),
         
 /**
  * Aluno se cadastrando na turma
@@ -146,6 +134,16 @@ public class AlunosTurma implements Serializable {
     public String enviarAtividade() {
         Context.setValue("alunoTurmaContext", this);
         return "go:br.edu.Arquivo@EnviarAtividade";
+    }
+    
+    public String alunosDaTurma() {
+        Context.setValue("turmaContext", this.getTurma());
+        return "go:br.edu.AlunosTurma@AlunosDaTurma";
+    }
+    
+    public String conteudosDaTurma(){
+        Context.setValue("alunoTurmaContext", this);
+        return "go:br.edu.Arquivo@ConteudosTurma";
     }
 
     public Integer getId() {
