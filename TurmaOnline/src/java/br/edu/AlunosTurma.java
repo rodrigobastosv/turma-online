@@ -55,8 +55,8 @@ import javax.persistence.NamedQuery;
            + "  usuario.nome;"
            + "  quantidadeAtividade, quantidadeFalta;"
            + "  enviarEmail(),enviarAtividade();]",
-   namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = 1",
-   //params = {@Param(name = "turma", value = "#{"+Context.getValue("turmaContext")+"}")},
+   namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = :idTurma",
+   params = {@Param(name = "idTurma", value = "#{idTurma}")},
   template = "@TABLE+@PAGER",
   roles = "Professor,Aluno",
   hidden = true),
