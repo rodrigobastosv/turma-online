@@ -24,7 +24,12 @@ import javax.persistence.NamedQuery;
 @NamedQueries({
     @NamedQuery(name = "ConsultarTurma",
                query = "  From Turma t"
-                     + " Where t.codigo = :codigoTurma ")})
+                     + " Where t.codigo = :codigoTurma "),
+    //<editor-fold defaultstate="collapsed" desc="Obter e-mails dos Alunos">
+    @NamedQuery(name = "EmailsAlunos",
+            query = " Select atm.usuario.email From AlunosTurma atm where atm.turma.id = :idTurma"),
+    //</editor-fold>
+})
 @Views({
 /**
  * Turmas do Aluno

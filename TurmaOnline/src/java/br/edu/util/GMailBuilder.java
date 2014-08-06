@@ -16,7 +16,7 @@ public class GMailBuilder extends MailThread {
                 setUsername("turmaonline.edu").
                 setPassword("uece2014").
                 setFromMail("turmaonline.edu@gmail.com", "Turma Online").
-                addToBcc("marcius.brandao@uece.br").
+                //addToBcc("marcius.brandao@uece.br").
                 addToBcc("vitor.rifane@gmail.com");
 
         return builder;
@@ -24,7 +24,8 @@ public class GMailBuilder extends MailThread {
 
     public static void main(String[] args) {
        GMailBuilder.getInstance().
-                addToMail("marciusbrandao@gmail.com").
+                //addToMail("marciusbrandao@gmail.com").
+                addToMail("vitor.rifane@gmail.com").
                 setSubject("[Turma Online] Email de Teste").
                 setMessage("Teste de envio de email via Turma Online").
                 sendMail();
