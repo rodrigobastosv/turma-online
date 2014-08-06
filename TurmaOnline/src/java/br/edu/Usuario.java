@@ -155,6 +155,24 @@ public class Usuario implements Serializable {
 
     @ActionDescriptor(preValidate = false, value = "Cadastrar-se")
     public String cadastrarSe() {
+        String camposNaoInformados = "";
+        if(email.isEmpty()){
+            camposNaoInformados += "\r\n E-mail";
+        }
+        
+        if(nome.isEmpty()){
+            camposNaoInformados += "\r\n Nome";
+        }
+        
+        if(perfis.isEmpty()){            
+            camposNaoInformados += "\r\n Perfil";
+        }
+        
+        if(!camposNaoInformados.isEmpty()){
+            throw new SecurityException("Informe os campos abaixo: " +camposNaoInformados);
+        }
+        
+        email = email.toLowerCase().trim();
         Usuario usuario = Repository.queryUnique("BuscarUsuario", email);
         if (usuario != null) {
             throw new SecurityException("Usuário já cadastrado com o e-mail informado!");
@@ -179,6 +197,7 @@ public class Usuario implements Serializable {
 
     @ActionDescriptor(preValidate = false)
     public String redefinirSenha() {
+        email = email.toLowerCase().trim();
         Usuario usuario = Repository.queryUnique("BuscarUsuario", email);
         if (usuario != null) {            
             usuario.setSenha(RandomStringUtils.randomAlphanumeric(8));
