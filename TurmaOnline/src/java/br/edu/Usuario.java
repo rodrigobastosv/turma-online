@@ -69,14 +69,16 @@ import util.jsf.Types;
             + "        '':#perfis;"
             + "        cadastrarSe()]",
             namedQuery = "Select new br.edu.Usuario()",
-            roles = "NOLOGGED"),
+            roles = "NOLOGGED",
+            hidden = true),
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="RedefinirSenha">
     @View(name = "RedefinirSenha",
             title = "Redefinir Senha",
             members = "[#email;redefinirSenha()]",
             namedQuery = "Select new br.edu.Usuario()",
-            roles = "NOLOGGED"),
+            roles = "NOLOGGED",
+            hidden = true),
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Sair">
     @View(name = "Sair",
@@ -138,14 +140,21 @@ public class Usuario implements Serializable {
 
     @ActionDescriptor(preValidate = false)
     public String entrar() {
+        String telaRetorno = "go:home";
+        
         Usuario usuario = Repository.queryUnique("AutenticarUsuario", email, senha);
         if (usuario != null) {
             Context.setCurrentUser(usuario);
+            if (usuario.getPerfis().contains(Perfil.Professor)){
+                telaRetorno = "go:br.edu.Turma@MinhasTurmas";
+            } else {
+                telaRetorno = "go:br.edu.AlunosTurma@MinhasDisciplinas";
+            }
         } else {
             throw new SecurityException("Usuário/Senha incorreto(s)!");
         }
 
-        return "go:home";
+        return telaRetorno;
     }
 
     public String sair() {

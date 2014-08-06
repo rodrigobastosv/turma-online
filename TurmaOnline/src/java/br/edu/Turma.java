@@ -11,6 +11,7 @@ import entities.annotations.View;
 import entities.annotations.Views;
 import entities.descriptor.PropertyType;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +36,8 @@ import util.jsf.Types;
     @NamedQuery(name = "TurmasDoProfessor",
             query = "From Turma t where t = :id"),
     @NamedQuery(name = "MinhasTurmas",
-            query = "From br.edu.Turma t where t.professor = :user")})
+            query = "From br.edu.Turma t where t.professor = :user")
+})
 @Views({
     /**
      * Minhas Turmas
@@ -109,9 +111,32 @@ public class Turma implements Serializable {
         GMailBuilder.getInstance().
                 addToMail("vitor.rifane@gmail.com").
                 setSubject(assunto).
-                setMessage(mensagem).
+                setMessage(mensagem).                
                 sendMail();
-        return "X emails enviados";
+        
+        List<String> emailsAlunos = Repository.query("EmailsAlunos", id);
+        //a forma é essa mesmo? enviar 1 email por vez?
+        int i =0;
+        for (String emailAluno : emailsAlunos) {
+            GMailBuilder.getInstance().
+                    addToMail(emailAluno).
+                    setSubject(assunto).
+                    setMessage(mensagem).
+                    sendMail();
+            i++;
+        }
+        return i+" emails enviados";
+    }
+    
+    private String obterEmailsAlunosTurma(){
+        String emails = "";
+        List<String> emailsAlunos = Repository.query("EmailsAlunos", id);
+        for(int i=0; i<emailsAlunos.size(); i++){
+            emails = emails + emailsAlunos.get(i)+",";
+        }
+        emails = emails.substring(0, emails.length()-1);
+        
+        return emails;
     }
 
     public String enviarConteudo() {
