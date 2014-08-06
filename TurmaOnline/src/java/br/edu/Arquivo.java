@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package br.edu;
 
 import entities.Context;
@@ -23,16 +17,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Past;
+import lombok.Data;
 
 /**
  *
  * @author br0600106533
  */
+@Data
 @Entity
 @NamedQueries({
     @NamedQuery(name = "ConsultarAlunoTurma",
                query = "  From AlunosTurma at"
-                     + " Where at.turma.codigoTurma = :codigoTurma ")})
+                     + " Where at.turma.codigo = :codigoTurma ")})
 @Views({
 /**
  * Professor enviando conteúdo para a turma TESTE
@@ -57,8 +53,8 @@ import javax.validation.constraints.Past;
 */
 @View(name = "MeusConteudos",
      title = "Meus conteúdos",
-    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio]",
-    namedQuery = "From br.edu.Arquivo a where a.usuario = :user",
+    members = "Arquivo[turma.nome;arquivo;dataEnvio]",
+    namedQuery = "From br.edu.Arquivo a where a.usuario = :user",//TODO criar namedQuery
     params = {@Param(name = "user", value = "#{context.currentUser}")},
     template = "@TABLE+@PAGE",
     roles = "Professor"),
@@ -67,8 +63,8 @@ import javax.validation.constraints.Past;
 */
 @View(name = "MinhasAtividades",
      title = "Minhas atividades",
-    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio;]",
-    namedQuery = "From br.edu.Arquivo a where a.usuario = :user",
+    members = "Arquivo[turma.nome;arquivo;dataEnvio;]",
+    namedQuery = "From br.edu.Arquivo a where a.usuario = :user",//TODO criar namedQuery
     params = {@Param(name = "user", value = "#{context.currentUser}")},
     template = "@TABLE+@PAGE",
     roles = "Aluno"),
@@ -77,9 +73,9 @@ import javax.validation.constraints.Past;
 */
 @View(name = "ConteudosTurma",
      title = "Conteúdos da turma",
-    members = "Arquivo[turma.nomeTurma;arquivo;dataEnvio;]",
-    namedQuery = "From br.edu.Arquivo a where a.turma = 1",
-    //params = {@Param(name = "turma", value = "#{context.currentUser}")},
+    members = "turma.nome;arquivo;dataEnvio",
+    namedQuery = "From br.edu.Arquivo a where a.turma.id = :idTurma",//TODO criar namedQuery
+    params = {@Param(name = "idTurma", value = "#{idTurma}")},
     template = "@TABLE+@PAGE",
     roles = "Professor,Aluno")
 })
@@ -89,15 +85,15 @@ public class Arquivo implements Serializable {
     @GeneratedValue    
     private Integer id;
     
+    @ManyToOne(optional = false)
+    private Turma turma = new Turma();
+        
     @Lob
     private byte[] arquivo;
     
     @Past
     @Temporal(TemporalType.DATE)
     private Date dataEnvio; 
-    
-    @ManyToOne(optional = false)
-    private Turma turma = new Turma();
     
     @ManyToOne(optional = false)
     private Usuario usuario;
@@ -137,45 +133,5 @@ public class Arquivo implements Serializable {
          
         return "go:br.edu.Arquivo@MeusConteudos";
     }    
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public byte[] getArquivo() {
-        return arquivo;
-    }
-
-    public void setArquivo(byte[] arquivo) {
-        this.arquivo = arquivo;
-    }
-
-    public Date getDataEnvio() {
-        return dataEnvio;
-    }
-
-    public void setDataEnvio(Date dataEnvio) {
-        this.dataEnvio = dataEnvio;
-    }    
-
-    public Turma getTurma() {
-        return turma;
-    }
-
-    public void setTurma(Turma turma) {
-        this.turma = turma;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }   
     
 }

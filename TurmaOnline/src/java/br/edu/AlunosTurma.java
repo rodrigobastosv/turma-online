@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package br.edu;
 
 import entities.Context;
@@ -30,15 +24,15 @@ import javax.persistence.NamedQuery;
 @NamedQueries({
     @NamedQuery(name = "ConsultarTurma",
                query = "  From Turma t"
-                     + " Where t.codigoTurma = :codigoTurma ")})
+                     + " Where t.codigo = :codigoTurma ")})
 @Views({
 /**
  * Turmas do Aluno
  */
 @View(name = "MinhasDisciplinas",
      title = "Minhas Disciplinas",
-   members = "AlunosTurma[turma.codigoTurma;"
-           + "  turma.nomeTurma;"
+   members = "AlunosTurma[turma.codigo;"
+           + "  turma.nome;"
            + "  quantidadeAtividade, quantidadeFalta;"
            + "  enviarEmail(),enviarAtividade();"
            + "  alunosDaTurma(),conteudosDaTurma();]",
@@ -51,7 +45,7 @@ import javax.persistence.NamedQuery;
  */
 @View(name = "AlunosDaTurma",
      title = "Alunos da turma",
-   members = "AlunosTurma[turma.nomeTurma,turma.codigoTurma;"
+   members = "AlunosTurma[turma.nome,turma.codigo;"
            + "  usuario.nome;"
            + "  quantidadeAtividade, quantidadeFalta;"
            + "  enviarEmail(),enviarAtividade();]",
@@ -66,9 +60,9 @@ import javax.persistence.NamedQuery;
  */
 @View(name = "CadastrarNaTurma",
      title = "Cadastrar-me na turma",
-   members = "AlunosTurma[Turma[#turma.codigoTurma];#matricula;cadastrarNaTurma()]",
-  namedQuery = "Select new br.edu.AlunosTurma()",
-  roles = "Aluno")
+     members = "AlunosTurma[Turma[#turma.codigo];#matricula;cadastrarNaTurma()]",
+     namedQuery = "Select new br.edu.AlunosTurma()",
+     roles = "Aluno")
 })
 public class AlunosTurma implements Serializable {
     
@@ -109,7 +103,7 @@ public class AlunosTurma implements Serializable {
     
     public String cadastrarNaTurma() {
         
-        List<Turma> turmas = Repository.query("ConsultarTurma", turma.getCodigoTurma());
+        List<Turma> turmas = Repository.query("ConsultarTurma", turma.getCodigo());
         
                 
          if (turmas.size() == 1) {

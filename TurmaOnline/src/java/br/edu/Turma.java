@@ -1,10 +1,15 @@
 package br.edu;
 
+import br.edu.util.GMailBuilder;
 import entities.Context;
 import entities.Repository;
+import entities.annotations.ActionDescriptor;
+import entities.annotations.Editor;
 import entities.annotations.Param;
+import entities.annotations.ParameterDescriptor;
 import entities.annotations.View;
 import entities.annotations.Views;
+import entities.descriptor.PropertyType;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +22,7 @@ import javax.persistence.Table;
 import lombok.Data;
 import org.apache.commons.lang.RandomStringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
+import util.jsf.Types;
 
 /**
  *
@@ -27,16 +33,18 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Table(name = "TURMAS")
 @NamedQueries({
     @NamedQuery(name = "TurmasDoProfessor",
-            query = "  From Turma t"
-            + " Where t = :id ")})
+            query = "From Turma t where t = :id"),
+    @NamedQuery(name = "MinhasTurmas",
+            query = "From br.edu.Turma t where t.professor = :user")})
 @Views({
     /**
      * Minhas Turmas
      */
     @View(name = "MinhasTurmas",
             title = "Minhas Turmas",
-            members = "Turma[codigoTurma;nomeTurma;qtdAlunos,qtdConteudos;enviarEmail(),enviarConteudo(),goConteudosDaTurma();goAlunosDaTurma();]",
-            namedQuery = "From br.edu.Turma t where t.usuario = :user",
+            header = "goCadastrarTurma()",
+            members = "codigo,nome,'Alunos':goAlunosDaTurma(),'Conteudos':goConteudosDaTurma(),Ação[enviarEmailParaTurma(),enviarConteudo()]",
+            namedQuery = "MinhasTurmas",
             params = {
                 @Param(name = "user", value = "#{context.currentUser}")},
             template = "@TABLE+@PAGE",
@@ -44,9 +52,10 @@ import org.hibernate.validator.constraints.NotEmpty;
     /**
      * Cadastro de turmas
      */
-    @View(name = "CadastrarTurmas",
-            title = "Cadastrar Turmas",
-            members = "Turmas[#nomeTurma];cadastrarTurma()",
+    @View(name = "CadastrarTurma",
+            hidden = true,
+            title = "Cadastrar Turma",
+            members = "[#nome;cadastrarTurma()]",
             namedQuery = "Select new br.edu.Turma()",
             roles = "Professor")
 })
@@ -57,42 +66,52 @@ public class Turma implements Serializable {
     private Integer id;
 
     @Column(length = 6)
-    private String codigoTurma;
+    private String codigo;
 
     @Column(length = 40)
     @NotEmpty(message = "Nome da turma não informado")
-    private String nomeTurma;
+    private String nome;
 
     @Column(precision = 2)
-    private Integer qtdAlunos;
+    private Integer qtdAlunos = 0;
 
     @Column(precision = 2)
-    private Integer qtdConteudos;
+    private Integer qtdConteudos = 0;
 
     @ManyToOne(optional = false)
-    private Usuario usuario;
+    private Usuario professor;
 
+    //<editor-fold defaultstate="collapsed" desc="Construtores">
     public Turma() {
     }
 
-    public Turma(String nomeTurma, Usuario usuario) {
-        this.nomeTurma = nomeTurma;
-        this.usuario = usuario;
-        this.codigoTurma = RandomStringUtils.randomAlphanumeric(6);
+    public Turma(String nome, Usuario usuario) {
+        this.nome = nome;
+        this.professor = usuario;
+        this.codigo = RandomStringUtils.randomAlphanumeric(6);
     }
+//</editor-fold>
 
     public String cadastrarTurma() {
-        Usuario usu = (Usuario) Context.getCurrentUser();
-        Turma novaTurma = new Turma(nomeTurma, usu);
-        novaTurma.setCodigoTurma(RandomStringUtils.randomAlphanumeric(6));
-        Repository.save(novaTurma);
+        Usuario prof = (Usuario) Context.getCurrentUser();
+        Turma turma = new Turma(nome, prof);
+        turma.setCodigo(RandomStringUtils.randomAlphanumeric(6));
+        Repository.save(turma);
 
         return "go:br.edu.Turma@MinhasTurmas";
     }
 
-    public String enviarEmail() {
-//        GMailBuilder.enviarEmailTeste();
-        return "go:home";
+    public String enviarEmailParaTurma(
+            @ParameterDescriptor(displayName = "Assunto") String assunto,
+            @ParameterDescriptor(displayName = "Mensagem")
+            @Editor(propertyType = PropertyType.MEMO) String mensagem) {
+        //TODO pegar lista de email dos alunos da turma
+        GMailBuilder.getInstance().
+                addToMail("vitor.rifane@gmail.com").
+                setSubject(assunto).
+                setMessage(mensagem).
+                sendMail();
+        return "X emails enviados";
     }
 
     public String enviarConteudo() {
@@ -101,15 +120,22 @@ public class Turma implements Serializable {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Métodos de Navegação">
+    @ActionDescriptor(value = "Cadastrar uma turma")
+    static public String goCadastrarTurma() {
+        return "go:br.edu.Turma@CadastrarTurma";
+    }
+
+    @ActionDescriptor(value = "#{dataItem.qtdAlunos}", componenteType = Types.COMMAND_LINK)
     public String goAlunosDaTurma() {
         Context.setValue("idTurma", this.id);
         return "go:br.edu.AlunosTurma@AlunosDaTurma";
     }
-    
+
+    @ActionDescriptor(value = "#{dataItem.qtdConteudos}", componenteType = Types.COMMAND_LINK)
     public String goConteudosDaTurma() {
-        Context.setValue("alunoTurmaContext", this);
+        Context.setValue("idTurma", this.id);
         return "go:br.edu.Arquivo@ConteudosTurma";
     }
 //</editor-fold>
-    
+
 }
