@@ -42,6 +42,7 @@ import lombok.Data;
 /**
  * Aluno enviando conteúdo para a turma
  */
+//apagar essa view
 @View(name = "EnviarAtividade",
      title = "Enviar atividade",
     members = "Arquivo[#arquivo;enviarAtividade()]",
@@ -61,13 +62,15 @@ import lombok.Data;
 /**
 * Minhas Turmas
 */
+//apagar essa view
 @View(name = "MinhasAtividades",
      title = "Minhas atividades",
     members = "Arquivo[turma.nome;arquivo;dataEnvio;]",
     namedQuery = "From br.edu.Arquivo a where a.usuario = :user",//TODO criar namedQuery
     params = {@Param(name = "user", value = "#{context.currentUser}")},
     template = "@TABLE+@PAGE",
-    roles = "Aluno"),
+    roles = "Aluno",
+    hidden = true),
 /**
 * Conteúdos da turma
 */
@@ -77,7 +80,8 @@ import lombok.Data;
     namedQuery = "From br.edu.Arquivo a where a.turma.id = :idTurma",//TODO criar namedQuery
     params = {@Param(name = "idTurma", value = "#{idTurma}")},
     template = "@TABLE+@PAGE",
-    roles = "Professor,Aluno")
+    roles = "Professor,Aluno",
+    hidden = true)
 })
 public class Arquivo implements Serializable {
     
