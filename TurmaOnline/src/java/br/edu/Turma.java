@@ -38,10 +38,8 @@ import util.jsf.Types;
     @NamedQuery(name = "MinhasTurmas",
             query = "From br.edu.Turma t where t.professor = :user")
 })
-@Views({
-    /**
-     * Minhas Turmas
-     */
+@Views({    
+    //<editor-fold defaultstate="collapsed" desc="Minhas Turmas">
     @View(name = "MinhasTurmas",
             title = "Minhas Turmas",
             header = "goCadastrarTurma()",
@@ -51,15 +49,15 @@ import util.jsf.Types;
                 @Param(name = "user", value = "#{context.currentUser}")},
             template = "@TABLE+@PAGE",
             roles = "Professor"),
-    /**
-     * Cadastro de turmas
-     */
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Cadastrar Turma">
     @View(name = "CadastrarTurma",
             hidden = true,
             title = "Cadastrar Turma",
             members = "[#nome;cadastrarTurma()]",
             namedQuery = "Select new br.edu.Turma()",
             roles = "Professor")
+//</editor-fold>
 })
 public class Turma implements Serializable {
 
