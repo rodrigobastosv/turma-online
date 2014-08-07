@@ -45,7 +45,16 @@ import util.jsf.Types;
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Obter Alunos da Turma">
 @NamedQuery(name = "ObterAlunosDaTurma",
-        query = "From br.edu.AlunosTurma atm where atm.turma.id = :idTurma")
+        query = "From br.edu.AlunosTurma atm where atm.turma.id = :idTurma"),
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Obter e-mail do Professor da Turma">
+@NamedQuery(name = "ObterEmailProfessorTurma",
+        //query = " Select atm.turma.usuario.email From br.edu.AlunosTurma atm where atm.turma.id = :idTurma"),
+        query = " Select t.professor.email From Turma t where t.id = :idTurma"),
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Obter e-mail do Aluno da Turma">
+@NamedQuery(name = "EmailAluno",
+        query = "Select atm.usuario.email From br.edu.AlunosTurma atm where atm.usuario.id = :idUsuario")
 //</editor-fold>
 })
 @Views({
@@ -53,7 +62,7 @@ import util.jsf.Types;
     @View(name = "MinhasDisciplinas",
             title = "Minhas Disciplinas",
             header = "goCadastrarSeNumaTurma()",
-            members = "turma.codigo,turma.nome, quantidadeFalta, 'Alunos':goAlunosDaTurma(), 'Conteudos':goConteudosDaTurma(),Ação[enviarEmailParaTurma()]",
+            members = "turma.codigo,turma.nome, quantidadeFalta, 'Alunos':goAlunosDaTurma(), 'Conteudos':goConteudosDaTurma(),Ação[enviarEmailParaProfessor()]",
             namedQuery = "MinhasDisciplinas",
             params = {
                 @Param(name = "user", value = "#{context.currentUser}")},
@@ -75,11 +84,20 @@ import util.jsf.Types;
     @View(name = "AlunosDaTurma",
             title = "Alunos da Turma",
             //header = "turma.nome",
-            members = "'Turma':turma.nome,matricula,usuario.nome, quantidadeFalta, Ação[enviarEmailParaTurma()]",
+            members = "turma.nome,matricula,usuario.nome, quantidadeFalta, Ação[enviarEmailParaAluno()]",
             namedQuery = "ObterAlunosDaTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
             template = "@TABLE+@PAGE",
-            roles = "Professor,Aluno",
+            roles = "Professor",
+            hidden = true),
+    @View(name = "AlunosDaDisciplina",
+            title = "Alunos da Disciplina",
+            //header = "turma.nome",
+            members = "turma.nome,matricula,usuario.nome, quantidadeFalta",
+            namedQuery = "ObterAlunosDaTurma",
+            params = {@Param(name = "idTurma", value = "#{idTurma}")},
+            template = "@TABLE+@PAGE",
+            roles = "Aluno",
             hidden = true),
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Aluno se cadastrando na turma">
@@ -129,12 +147,13 @@ public class AlunosTurma implements Serializable {
         this.quantidadeAtividade = 0;
     }
     
+    //<editor-fold defaultstate="collapsed" desc="Cadastro do aluno na turma">
     public String cadastrarNaTurma() {
         
         Turma turmaDoAluno = Repository.queryUnique("ConsultarTurma", turma.getCodigo());
         
-                
-         if (turmaDoAluno != null) {           
+        
+        if (turmaDoAluno != null) {
             Usuario usu = (Usuario) Context.getCurrentUser();
             AlunosTurma alunoTurma = new AlunosTurma(turmaDoAluno,usu, matricula);
             Repository.save(alunoTurma);
@@ -143,13 +162,11 @@ public class AlunosTurma implements Serializable {
         }else {
             throw new SecurityException("Turma não encontrada");
         }
-         
+        
         return "go:br.edu.AlunosTurma@MinhasDisciplinas";
     }
+//</editor-fold>
     
-    public String enviarEmail() {
-        return "go:home";
-    }
     
     public String enviarAtividade() {
         Context.setValue("alunoTurmaContext", this);
@@ -166,30 +183,63 @@ public class AlunosTurma implements Serializable {
         return "go:br.edu.Arquivo@ConteudosTurma";
     }
     
+    //<editor-fold defaultstate="collapsed" desc="Enviar email para o Professor">
+    @ActionDescriptor(componenteType = Types.COMMAND_BUTTON )
+    public String enviarEmailParaProfessor(
+            @ParameterDescriptor(displayName = "Assunto") String assunto,
+            @ParameterDescriptor(displayName = "Mensagem")
+            @Editor(propertyType = PropertyType.MEMO) String mensagem) {
+        
+        String emailProfessor = Repository.queryUnique("ObterEmailProfessorTurma", turma.getId());
+        this.enviarEmail(emailProfessor, assunto, mensagem);
+        
+        return "E-mails enviado para o professor";
+    }
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Enviar email para Aluno">
+    @ActionDescriptor(componenteType = Types.COMMAND_BUTTON )
+    public String enviarEmailParaAluno(
+            @ParameterDescriptor(displayName = "Assunto") String assunto,
+            @ParameterDescriptor(displayName = "Mensagem")
+            @Editor(propertyType = PropertyType.MEMO) String mensagem) {
+        
+        String emailAluno = Repository.queryUnique("EmailAluno", usuario.getId());;
+        this.enviarEmail(emailAluno, assunto, mensagem);
+        
+        return "E-mails enviado para o aluno";
+    }
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Enviar email genérico">
+    private void enviarEmail(String email, String assunto, String mensagem){
+        GMailBuilder.getInstance().
+                addToMail("vitor.rifane@gmail.com").
+                addToMail(email).
+                setSubject(assunto).
+                setMessage(mensagem).
+                sendMail();
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="enviar email pra turma">
     public String enviarEmailParaTurma(
             @ParameterDescriptor(displayName = "Assunto") String assunto,
             @ParameterDescriptor(displayName = "Mensagem")
             @Editor(propertyType = PropertyType.MEMO) String mensagem) {
         //TODO pegar lista de email dos alunos da turma
-        GMailBuilder.getInstance().
-                addToMail("vitor.rifane@gmail.com").
-                setSubject(assunto).
-                setMessage(mensagem).                
-                sendMail();
+        this.enviarEmail("vitor.rifane@gmail.com", assunto, mensagem);
         
         List<String> emailsAlunos = Repository.query("EmailsAlunos", id);
         //a forma é essa mesmo? enviar 1 email por vez?
         int i =0;
         for (String emailAluno : emailsAlunos) {
-            GMailBuilder.getInstance().
-                    addToMail(emailAluno).
-                    setSubject(assunto).
-                    setMessage(mensagem).
-                    sendMail();
+            this.enviarEmail(emailAluno, assunto, mensagem);
             i++;
         }
         return i+" emails enviados";
     }
+//</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Métodos de Navegação">
     @ActionDescriptor(value = "Cadastrar-se numa turma")
@@ -200,7 +250,7 @@ public class AlunosTurma implements Serializable {
     @ActionDescriptor(value = "#{dataItem.turma.qtdAlunos}", componenteType = Types.COMMAND_LINK)
     public String goAlunosDaTurma() {
         Context.setValue("idTurma", this.turma.getId());
-        return "go:br.edu.AlunosTurma@AlunosDaTurma";
+        return "go:br.edu.AlunosTurma@AlunosDaDisciplina";
     }
 
     @ActionDescriptor(value = "#{dataItem.turma.qtdConteudos}", componenteType = Types.COMMAND_LINK)
