@@ -70,17 +70,6 @@ import util.jsf.Types;
             roles = "Aluno"),
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Alunos da turma">
-    @View(name = "AlunosDaTurmaAntigo",
-            title = "Alunos da turma Antigo",
-            members = "AlunosTurma[turma.nome,turma.codigo;"
-                    + "  usuario.nome;"
-                    + "  quantidadeAtividade, quantidadeFalta;"
-                    + "  enviarEmail(),enviarAtividade();]",
-            namedQuery = "From br.edu.AlunosTurma atm where atm.turma.id = :idTurma",
-            params = {@Param(name = "idTurma", value = "#{idTurma}")},
-            template = "@TABLE+@PAGER",
-            roles = "Professor,Aluno",
-            hidden = true),
     @View(name = "AlunosDaTurma",
             title = "Alunos da Turma",
             //header = "turma.nome",
@@ -90,6 +79,8 @@ import util.jsf.Types;
             template = "@TABLE+@PAGE",
             roles = "Professor",
             hidden = true),
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Alunos da disciplina">
     @View(name = "AlunosDaDisciplina",
             title = "Alunos da Disciplina",
             //header = "turma.nome",
@@ -180,7 +171,7 @@ public class AlunosTurma implements Serializable {
     
     public String conteudosDaTurma(){
         Context.setValue("alunoTurmaContext", this);
-        return "go:br.edu.Arquivo@ConteudosTurma";
+        return "go:br.edu.ArquivosTurma@ConteudosTurma";
     }
     
     //<editor-fold defaultstate="collapsed" desc="Enviar email para o Professor">
@@ -256,7 +247,7 @@ public class AlunosTurma implements Serializable {
     @ActionDescriptor(value = "#{dataItem.turma.qtdConteudos}", componenteType = Types.COMMAND_LINK)
     public String goConteudosDaTurma() {
         Context.setValue("idTurma", this.turma.getId());
-        return "go:br.edu.Arquivo@ConteudosTurma";
+        return "go:br.edu.ArquivosTurma@ConteudosTurma";
     }
 //</editor-fold>    
 }

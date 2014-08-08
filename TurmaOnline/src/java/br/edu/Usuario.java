@@ -41,13 +41,17 @@ import util.jsf.Types;
 @Entity
 @Table(name = "USUARIOS")
 @NamedQueries({
+//<editor-fold defaultstate="collapsed" desc="Autenticar Usuário">
     @NamedQuery(name = "AutenticarUsuario",
             query = "  From Usuario u"
-            + " Where u.email = :email "
-            + "   and u.senha = :senha "),
+                    + " Where u.email = :email "
+                    + "   and u.senha = :senha "),
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Buscar Usuário">
     @NamedQuery(name = "BuscarUsuario",
             query = "  From Usuario u"
-            + " Where u.email = :email ")})
+                    + " Where u.email = :email ")})
+//</editor-fold>
 @Views({
     //<editor-fold defaultstate="collapsed" desc="Entrar">
     @View(name = "Entrar",
@@ -138,6 +142,7 @@ public class Usuario implements Serializable {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Entrar">
     @ActionDescriptor(preValidate = false)
     public String entrar() {
         String telaRetorno = "go:home";
@@ -153,15 +158,19 @@ public class Usuario implements Serializable {
         } else {
             throw new SecurityException("Usuário/Senha incorreto(s)!");
         }
-
+        
         return telaRetorno;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Sair">
     public String sair() {
         Context.clear();
         return "go:br.edu.Usuario@Entrar";
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Cadastrar-se">
     @ActionDescriptor(preValidate = false, value = "Cadastrar-se")
     public String cadastrarSe() {
         String camposNaoInformados = "";
@@ -173,7 +182,7 @@ public class Usuario implements Serializable {
             camposNaoInformados += "\r\n Nome";
         }
         
-        if(perfis.isEmpty()){            
+        if(perfis.isEmpty()){
             camposNaoInformados += "\r\n Perfil";
         }
         
@@ -186,32 +195,34 @@ public class Usuario implements Serializable {
         if (usuario != null) {
             throw new SecurityException("Usuário já cadastrado com o e-mail informado!");
         }
-
+        
         Usuario novoUsuario = new Usuario();
         novoUsuario.setEmail(email);
         novoUsuario.setNome(nome);
         novoUsuario.setPerfis(perfis);
         novoUsuario.setSenha(RandomStringUtils.randomAlphanumeric(8));
         Repository.save(novoUsuario);
-
-        //enviar email com a sua senha            
+        
+        //enviar email com a sua senha
         GMailBuilder.getInstance().
                 addToMail(email).
                 setSubject("[TurmaOnLine]Cadastro").
                 setMessage("Sua conta: " + novoUsuario + "<br> e senha: " + novoUsuario.getSenha()).
                 sendMail();
-
+        
         return "Uma senha foi enviada para seu email";
     }
+//</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Redefinir Senha">
     @ActionDescriptor(preValidate = false)
     public String redefinirSenha() {
         email = email.toLowerCase().trim();
         Usuario usuario = Repository.queryUnique("BuscarUsuario", email);
-        if (usuario != null) {            
+        if (usuario != null) {
             usuario.setSenha(RandomStringUtils.randomAlphanumeric(8));
             Repository.save(usuario);
-
+            
             //enviar email com a nova senha
             GMailBuilder.getInstance().
                     addToMail(email).
@@ -221,9 +232,10 @@ public class Usuario implements Serializable {
         } else {
             throw new SecurityException("Usuário/Senha incorreto(s)!");
         }
-
+        
         return "go:home";
     }
+//</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Métodos de Navegação">
     @ActionDescriptor(componenteType = Types.COMMAND_LINK, value = "Cadastrar-se", immediate = true)
