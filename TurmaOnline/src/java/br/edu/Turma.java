@@ -33,10 +33,14 @@ import util.jsf.Types;
 @Entity
 @Table(name = "TURMAS")
 @NamedQueries({
+    //<editor-fold defaultstate="collapsed" desc="Turmas do Professor">
     @NamedQuery(name = "TurmasDoProfessor",
             query = "From Turma t where t = :id"),
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Obter Minhas Turmas">
     @NamedQuery(name = "MinhasTurmas",
             query = "From br.edu.Turma t where t.professor = :user")
+    //</editor-fold>
 })
 @Views({    
     //<editor-fold defaultstate="collapsed" desc="Minhas Turmas">
@@ -79,7 +83,7 @@ public class Turma implements Serializable {
     private Integer qtdConteudos = 0;
 
     @ManyToOne(optional = false)
-    private Usuario professor;
+    private Usuario professor;        
 
     //<editor-fold defaultstate="collapsed" desc="Construtores">
     public Turma() {
@@ -92,15 +96,18 @@ public class Turma implements Serializable {
     }
 //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Cadastrar Turma">
     public String cadastrarTurma() {
         Usuario prof = (Usuario) Context.getCurrentUser();
         Turma turma = new Turma(nome, prof);
         turma.setCodigo(RandomStringUtils.randomAlphanumeric(6));
         Repository.save(turma);
-
+        
         return "go:br.edu.Turma@MinhasTurmas";
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Enviar Email para a turma">
     public String enviarEmailParaTurma(
             @ParameterDescriptor(displayName = "Assunto") String assunto,
             @ParameterDescriptor(displayName = "Mensagem")
@@ -109,7 +116,7 @@ public class Turma implements Serializable {
         GMailBuilder.getInstance().
                 addToMail("vitor.rifane@gmail.com").
                 setSubject(assunto).
-                setMessage(mensagem).                
+                setMessage(mensagem).
                 sendMail();
         
         List<String> emailsAlunos = Repository.query("EmailsAlunos", id);
@@ -125,22 +132,14 @@ public class Turma implements Serializable {
         }
         return i+" emails enviados";
     }
-    
-    private String obterEmailsAlunosTurma(){
-        String emails = "";
-        List<String> emailsAlunos = Repository.query("EmailsAlunos", id);
-        for(int i=0; i<emailsAlunos.size(); i++){
-            emails = emails + emailsAlunos.get(i)+",";
-        }
-        emails = emails.substring(0, emails.length()-1);
-        
-        return emails;
-    }
-
+    //</editor-fold>
+   
+    //<editor-fold defaultstate="collapsed" desc="Enviar Conteúdo">
     public String enviarConteudo() {
         Context.setValue("turmaContext", this);
-        return "go:br.edu.Arquivo@EnviarConteudo";
+        return "go:br.edu.ArquivosTurma@EnviarConteudo";
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Métodos de Navegação">
     @ActionDescriptor(value = "Cadastrar uma turma")
@@ -157,7 +156,7 @@ public class Turma implements Serializable {
     @ActionDescriptor(value = "#{dataItem.qtdConteudos}", componenteType = Types.COMMAND_LINK)
     public String goConteudosDaTurma() {
         Context.setValue("idTurma", this.id);
-        return "go:br.edu.Arquivo@ConteudosTurma";
+        return "go:br.edu.ArquivosTurma@ConteudosTurma";        
     }
 //</editor-fold>
 
