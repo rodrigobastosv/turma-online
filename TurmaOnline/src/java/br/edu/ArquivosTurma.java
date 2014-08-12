@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package br.edu;
 
 import entities.Context;
@@ -65,8 +59,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 //<editor-fold defaultstate="collapsed" desc="Conteúdos da turma">
     @View(name = "ConteudosTurma",
             title = "Conteúdos da turma",
-            members = "turma.nome;arquivo.arquivo;arquivo.nome,arquivo.tamanho;descricao;arquivo.dataEnvio",
-            //namedQuery = "From br.edu.Arquivo a where a.turma.id = :idTurma",//TODO criar namedQuery
+            members = "'Turma':turma.nome;arquivo.nome,arquivo.tamanho;descricao;arquivo.dataEnvio;Ctrl.DAO.deleteRow()",
             namedQuery = "ObterConteudosTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
             template = "@TABLE+@PAGER",
