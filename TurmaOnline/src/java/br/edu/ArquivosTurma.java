@@ -46,16 +46,20 @@ import org.hibernate.validator.constraints.NotEmpty;
 //<editor-fold defaultstate="collapsed" desc="Meus Conteúdos">
     @View(name = "MeusConteudos",
             title = "Meus conteúdos",
-            members = "ArquivosTurma[turma.nome;arquivo.nome,arquivo.tamanho,descricao;arquivo.arquivo;arquivo.dataEnvio];",
+            members = "ArquivosTurma[turma.nome;"
+                    + "              arquivo.nome,arquivo.tamanho,descricao;"
+                    + "              arquivo.arquivo;"
+                    + "              arquivo.dataEnvio];",
             namedQuery = "ObterMeusConteudos",
             params = {@Param(name = "user", value = "#{context.currentUser}")},
             template = "@TABLE+@PAGE",
-            roles = "Professor"),
+            roles = "Professor",
+            hidden = true),
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Conteúdos da turma">
     @View(name = "ConteudosTurma",
             title = "Conteúdos da turma",
-            members = "turma.nome;arquivo;descricao;arquivo.dataEnvio",
+            members = "turma.nome;arquivo.nome,arquivo.tamanho;descricao;arquivo.dataEnvio",
             //namedQuery = "From br.edu.Arquivo a where a.turma.id = :idTurma",//TODO criar namedQuery
             namedQuery = "ObterConteudosTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
@@ -87,7 +91,7 @@ public class ArquivosTurma implements Serializable {
     
     @Column(length = 100)
     @NotEmpty(message = "Descrição do arquivo não informada")
-    @PropertyDescriptor(displayWidth = 60)
+    @PropertyDescriptor(displayWidth = 60, displayName = "Descrição")
     private String descricao;
     
     public ArquivosTurma(){        

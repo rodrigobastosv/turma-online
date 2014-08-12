@@ -7,6 +7,7 @@ import entities.annotations.ActionDescriptor;
 import entities.annotations.Editor;
 import entities.annotations.Param;
 import entities.annotations.ParameterDescriptor;
+import entities.annotations.PropertyDescriptor;
 import entities.annotations.View;
 import entities.annotations.Views;
 import entities.descriptor.PropertyType;
@@ -70,6 +71,7 @@ public class Turma implements Serializable {
     private Integer id;
 
     @Column(length = 6)
+    @PropertyDescriptor(displayName = "Código")
     private String codigo;
 
     @Column(length = 40)
