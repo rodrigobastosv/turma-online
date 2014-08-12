@@ -34,11 +34,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Obter Conteúdos da Turma">
     @NamedQuery(name = "ObterConteudosTurma",
-            query = "From ArquivosTurma atm where atm.turma.id = :idTurma"),
-//</editor-fold>
-//<editor-fold defaultstate="collapsed" desc="Exclui o conteúdo">
-    @NamedQuery(name = "ObterConteudosTurma",
-            query = "From ArquivosTurma atm where atm.turma.id = :idTurma"),
+            query = "From ArquivosTurma atm where atm.turma.id = :idTurma")
 //</editor-fold>
 })
 
@@ -126,31 +122,6 @@ public class ArquivosTurma implements Serializable {
         Repository.save(arquivoTurmaNovo);
         
         return "go:br.edu.ArquivosTurma@MeusConteudos";
-    }
-    
-    @ActionDescriptor(displayName = "Excluir Conteúdo")
-    public String excluirConteudo() throws FileNotFoundException, IOException {
-        
-        Turma turmaContext = (Turma) Context.getValue("turmaContext");
-        
-        Usuario usu = (Usuario) Context.getCurrentUser();
-
-        FileInputStream fileInputStream = new FileInputStream(arquivo.getFileArquivo());
-        try {
-            arquivo.setArquivo(new byte[ (int) arquivo.getFileArquivo().length()]);
-            fileInputStream.read(arquivo.getArquivo());
-            fileInputStream.close();
-        } catch (IOException e){            
-            throw new SecurityException("Não foi possível carregar o arquivo!");
-        }
-        Arquivo arquivoNovo = new Arquivo(arquivo.getArquivo(), usu, arquivo.getFileArquivo());
-        Repository.save(arquivoNovo);
-        turmaContext.setQtdConteudos(turmaContext.getQtdConteudos()+1);
-        Repository.save(turmaContext);
-        ArquivosTurma arquivoTurmaNovo = new ArquivosTurma(arquivoNovo, turmaContext, descricao);
-        Repository.save(arquivoTurmaNovo);
-        
-        return "go:br.edu.ArquivosTurma@MeusConteudos";
-    }
-    //</editor-fold>
+    }        
+    //</editor-fold>   
 }
