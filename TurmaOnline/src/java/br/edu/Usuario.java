@@ -171,7 +171,7 @@ public class Usuario implements Serializable {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Cadastrar-se">
-    @ActionDescriptor(preValidate = false, value = "Cadastrar-se")
+    @ActionDescriptor(preValidate = false, value = "Cadastrar-se", refreshView = true)
     public String cadastrarSe() {
         String camposNaoInformados = "";
         if(email.isEmpty()){
