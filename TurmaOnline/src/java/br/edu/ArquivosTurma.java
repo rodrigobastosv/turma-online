@@ -52,14 +52,24 @@ import org.hibernate.validator.constraints.NotEmpty;
             roles = "Professor",
             hidden = true),
 //</editor-fold>
-//<editor-fold defaultstate="collapsed" desc="Conteúdos da turma">
-    @View(name = "ConteudosTurma",
+//<editor-fold defaultstate="collapsed" desc="Conteúdos da turma para professor">
+    @View(name = "ConteudosTurmaProfessor",
             title = "Conteúdos da turma",
-            members = "'Turma':turma.nome;arquivo.nome,arquivo.tamanho;descricao;arquivo.dataEnvio;Ctrl.DAO.deleteRow()",
+            members = "'Turma':turma.nome;arquivo.nome,arquivo.arquivo;arquivo.tamanho;descricao;arquivo.dataEnvio;Ctrl.DAO.deleteRow()",
             namedQuery = "ObterConteudosTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
             template = "@TABLE+@PAGER",
-            roles = "Professor,Aluno",
+            roles = "Professor",
+            hidden = true),
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Conteúdos da turma para aluno">
+    @View(name = "ConteudosTurmaAluno",
+            title = "Conteúdos da turma",
+            members = "'Turma':turma.nome;arquivo.nome,arquivo.arquivo;arquivo.tamanho;descricao;arquivo.dataEnvio;",
+            namedQuery = "ObterConteudosTurma",
+            params = {@Param(name = "idTurma", value = "#{idTurma}")},
+            template = "@TABLE+@PAGER",
+            roles = "Aluno",
             hidden = true),
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Enviar Conteúdo">
@@ -121,7 +131,7 @@ public class ArquivosTurma implements Serializable {
         ArquivosTurma arquivoTurmaNovo = new ArquivosTurma(arquivoNovo, turmaContext, descricao);
         Repository.save(arquivoTurmaNovo);
         
-        return "go:br.edu.ArquivosTurma@MeusConteudos";
+        return "go:br.edu.Turma@MinhasTurmas";
     }        
     //</editor-fold>   
 }

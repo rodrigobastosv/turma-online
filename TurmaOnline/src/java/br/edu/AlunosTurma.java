@@ -35,6 +35,11 @@ import util.jsf.Types;
         query = "  From Turma t"
                 + " Where t.codigo = :codigoTurma "),
 //</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="Consultar Aluno na Turma">
+@NamedQuery(name = "ConsultarAlunoNaTurma",
+        query = "  From AlunosTurma t"
+                + " Where t.usuario.id = :idUsuario and t.turma.codigo = :codigoTurma "),
+//</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Obter e-mails dos Alunos">
 @NamedQuery(name = "EmailsAlunos",
         query = " Select atm.usuario.email From AlunosTurma atm where atm.turma.id = :idTurma"),   
@@ -58,11 +63,11 @@ import util.jsf.Types;
 //</editor-fold>
 })
 @Views({
-//<editor-fold defaultstate="collapsed" desc="Minhas Disciplinas">
-    @View(name = "MinhasDisciplinas",
-            title = "Minhas Disciplinas",
+//<editor-fold defaultstate="collapsed" desc="Minhas Turmas do Aluno">
+    @View(name = "MinhasTurmasAluno",
+            title = "Minhas Turmas",
             header = "goCadastrarSeNumaTurma()",
-            members = "turma.codigo,turma.nome, quantidadeFalta, 'Alunos':goAlunosDaTurma(), 'Conteúdos':goConteudosDaTurma(),Ação[enviarEmailParaProfessor()]",
+            members = "turma.codigo,turma.nome, quantidadeFalta, 'Alunos':goAlunosDaTurma(), 'Conteúdos':goConteudosDaTurma(),Ação[enviarEmailParaProfessor()];Ctrl.DAO.deleteRow()",
             namedQuery = "MinhasDisciplinas",
             params = {
                 @Param(name = "user", value = "#{context.currentUser}")},
@@ -73,7 +78,7 @@ import util.jsf.Types;
     @View(name = "AlunosDaTurma",
             title = "Alunos da Turma",
             //header = "turma.nome",
-            members = "'Turma':turma.nome,matricula,'Aluno':usuario.nome, quantidadeFalta, Ação[enviarEmailParaAluno(),Ctrl.DAO.deleteRow()]",
+            members = "'Turma':turma.nome,matricula,'Aluno':usuario.nome, usuario.email, Ação[enviarEmailParaAluno(),Ctrl.DAO.deleteRow()]",
             namedQuery = "ObterAlunosDaTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
             template = "@TABLE+@PAGE",
@@ -145,11 +150,22 @@ public class AlunosTurma implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Cadastro do aluno na turma">
     public String cadastrarNaTurma() {
         
+        
+        
         Turma turmaDoAluno = Repository.queryUnique("ConsultarTurma", turma.getCodigo());
+        //ConsultarAlunoNaTurma
         
         
         if (turmaDoAluno != null) {
+            
             Usuario usu = (Usuario) Context.getCurrentUser();
+            
+            AlunosTurma alunoNaTurma = Repository.queryUnique("ConsultarAlunoNaTurma", usu.getId(), turma.getCodigo());
+            
+            if(alunoNaTurma != null){
+                throw new SecurityException("Aluno já cadastrado na turma!");
+            }
+            
             AlunosTurma alunoTurma = new AlunosTurma(turmaDoAluno,usu, matricula);
             Repository.save(alunoTurma);
             turmaDoAluno.setQtdAlunos(turmaDoAluno.getQtdAlunos()+1);
@@ -158,7 +174,7 @@ public class AlunosTurma implements Serializable {
             throw new SecurityException("Turma não encontrada");
         }
         
-        return "go:br.edu.AlunosTurma@MinhasDisciplinas";
+        return "go:br.edu.AlunosTurma@MinhasTurmasAluno";
     }
 //</editor-fold>
     
@@ -252,7 +268,7 @@ public class AlunosTurma implements Serializable {
     @ActionDescriptor(value = "#{dataItem.turma.qtdConteudos}", componenteType = Types.COMMAND_LINK)
     public String goConteudosDaTurma() {
         Context.setValue("idTurma", this.turma.getId());
-        return "go:br.edu.ArquivosTurma@ConteudosTurma";
+        return "go:br.edu.ArquivosTurma@ConteudosTurmaAluno";
     }
 //</editor-fold>    
 }

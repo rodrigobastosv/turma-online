@@ -107,7 +107,7 @@ public class Usuario implements Serializable {
     @Id
     @GeneratedValue
     private Integer id;
-
+    
     @Column(length = 100)
     @NotEmpty(message = "Nome do usuario não informado")
     @PropertyDescriptor(displayWidth = 60)
@@ -153,7 +153,7 @@ public class Usuario implements Serializable {
             if (usuario.getPerfis().contains(Perfil.Professor)){
                 telaRetorno = "go:br.edu.Turma@MinhasTurmas";
             } else {
-                telaRetorno = "go:br.edu.AlunosTurma@MinhasDisciplinas";
+                telaRetorno = "go:br.edu.AlunosTurma@MinhasTurmasAluno";
             }
         } else {
             throw new SecurityException("Usuário/Senha incorreto(s)!");

@@ -48,7 +48,7 @@ import util.jsf.Types;
     @View(name = "MinhasTurmas",
             title = "Minhas Turmas",
             header = "goCadastrarTurma()",
-            members = "codigo,nome,'Alunos':goAlunosDaTurma(),'Conteudos':goConteudosDaTurma(),Ação[enviarEmailParaTurma(),enviarConteudo()]",
+            members = "codigo,nome,'Alunos':goAlunosDaTurma(),'Conteudos':goConteudosDaTurma(),Ação[enviarEmailParaTurma(),enviarConteudo(),Ctrl.DAO.deleteRow()]",
             namedQuery = "MinhasTurmas",
             params = {
                 @Param(name = "user", value = "#{context.currentUser}")},
@@ -160,7 +160,7 @@ public class Turma implements Serializable {
     @ActionDescriptor(value = "#{dataItem.qtdConteudos}", componenteType = Types.COMMAND_LINK)
     public String goConteudosDaTurma() {
         Context.setValue("idTurma", this.id);
-        return "go:br.edu.ArquivosTurma@ConteudosTurma";        
+        return "go:br.edu.ArquivosTurma@ConteudosTurmaProfessor";        
     }
 //</editor-fold>
 
