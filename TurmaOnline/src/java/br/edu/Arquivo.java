@@ -57,6 +57,7 @@ public class Arquivo implements Serializable {
     private Long tamanho;
     
     @Transient
+    @PropertyDescriptor(displayName = "Arquivo")
     private File fileArquivo;
     
     public Arquivo(){
