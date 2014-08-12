@@ -73,7 +73,7 @@ import util.jsf.Types;
     @View(name = "AlunosDaTurma",
             title = "Alunos da Turma",
             //header = "turma.nome",
-            members = "'Turma':turma.nome,matricula,'Aluno':usuario.nome, quantidadeFalta, Ação[enviarEmailParaAluno()]",
+            members = "'Turma':turma.nome,matricula,'Aluno':usuario.nome, quantidadeFalta, Ação[enviarEmailParaAluno(),Ctrl.DAO.deleteRow()]",
             namedQuery = "ObterAlunosDaTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
             template = "@TABLE+@PAGE",
