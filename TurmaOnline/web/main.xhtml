@@ -31,7 +31,9 @@
                                     <e:languages/>
                                 </rich:menuItem>
                             </rich:dropDownMenu>-->
-                            <h:outputText value="Usuário: #{context.currentUser().userName()}" />
+                            <!-- <h:outputText value="Usuário: #{context.currentUser().userName()}"  /> -->
+                            <h:outputText value="#{context.currentUser().userName()!=null ? 'Usuário: ' : '' }"/>
+                            <h:outputText value="#{context.currentUser().userName()!=null ? context.currentUser().userName() : '' }"/>
                         </rich:toolBar>
                     </h:form>
                 </f:view>
