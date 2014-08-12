@@ -79,9 +79,11 @@ public class Turma implements Serializable {
     private String nome;
 
     @Column(precision = 2)
+    @PropertyDescriptor(displayName = "Qtde. Alunos")
     private Integer qtdAlunos = 0;
 
     @Column(precision = 2)
+    @PropertyDescriptor(displayName = "Qtde. Conteúdos")
     private Integer qtdConteudos = 0;
 
     @ManyToOne(optional = false)
