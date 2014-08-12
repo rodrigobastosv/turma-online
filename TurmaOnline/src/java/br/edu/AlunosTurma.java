@@ -94,9 +94,9 @@ import util.jsf.Types;
 //<editor-fold defaultstate="collapsed" desc="Aluno se cadastrando na turma">
 @View(name = "CadastrarNaTurma",
         title = "Cadastrar-me na turma",
-        members = "#turma.codigo;"
+        members = "[#turma.codigo;"
                 + "#matricula;"
-                + "cadastrarNaTurma()",
+                + "cadastrarNaTurma()]",
         namedQuery = "Select new br.edu.AlunosTurma()",
         roles = "Aluno",
         hidden = true)
