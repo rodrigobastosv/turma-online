@@ -63,7 +63,7 @@ import org.hibernate.validator.constraints.NotEmpty;
             //namedQuery = "From br.edu.Arquivo a where a.turma.id = :idTurma",//TODO criar namedQuery
             namedQuery = "ObterConteudosTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
-            template = "@TABLE+@PAGE",
+            template = "@TABLE+@PAGER",
             roles = "Professor,Aluno",
             hidden = true),
 //</editor-fold>
