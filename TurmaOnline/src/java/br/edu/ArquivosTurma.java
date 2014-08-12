@@ -12,6 +12,9 @@ import entities.annotations.Param;
 import entities.annotations.PropertyDescriptor;
 import entities.annotations.View;
 import entities.annotations.Views;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +46,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 //<editor-fold defaultstate="collapsed" desc="Meus Conteúdos">
     @View(name = "MeusConteudos",
             title = "Meus conteúdos",
-            members = "ArquivosTurma[turma.nome;descricao;arquivo;arquivo.dataEnvio];",
+            members = "ArquivosTurma[turma.nome;arquivo.nome,arquivo.tamanho,descricao;arquivo.arquivo;arquivo.dataEnvio];",
             namedQuery = "ObterMeusConteudos",
             params = {@Param(name = "user", value = "#{context.currentUser}")},
             template = "@TABLE+@PAGE",
@@ -63,7 +66,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 //<editor-fold defaultstate="collapsed" desc="Enviar Conteúdo">
     @View(name = "EnviarConteudo",
             title = "Enviar conteúdo",
-            members = "Arquivo[#arquivo.arquivo;#descricao;enviarConteudo()]",
+            members = "Arquivo[#arquivo.fileArquivo;#descricao;enviarConteudo()]",
             namedQuery = "Select new br.edu.ArquivosTurma()",
             roles = "Professor",
             hidden = true),
@@ -97,12 +100,21 @@ public class ArquivosTurma implements Serializable {
     }
     
     //<editor-fold defaultstate="collapsed" desc="Enviar Conteúdo">
-    public String enviarConteudo() {
+    public String enviarConteudo() throws FileNotFoundException, IOException {
         
         Turma turmaContext = (Turma) Context.getValue("turmaContext");
         
         Usuario usu = (Usuario) Context.getCurrentUser();
-        Arquivo arquivoNovo = new Arquivo(arquivo.getArquivo(), usu);
+
+        FileInputStream fileInputStream = new FileInputStream(arquivo.getFileArquivo());
+        try {
+            arquivo.setArquivo(new byte[ (int) arquivo.getFileArquivo().length()]);
+            fileInputStream.read(arquivo.getArquivo());
+            fileInputStream.close();
+        } catch (IOException e){            
+            throw new SecurityException("Não foi possível carregar o arquivo!");
+        }
+        Arquivo arquivoNovo = new Arquivo(arquivo.getArquivo(), usu, arquivo.getFileArquivo());
         Repository.save(arquivoNovo);
         turmaContext.setQtdConteudos(turmaContext.getQtdConteudos()+1);
         Repository.save(turmaContext);
