@@ -235,7 +235,7 @@ public class AlunosTurma implements Serializable {
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Métodos de Navegação">
-    @ActionDescriptor(value = "Cadastrar-se numa turma")
+    @ActionDescriptor(value = "Cadastrar-se em uma turma")
     static public String goCadastrarSeNumaTurma() {
         return "go:br.edu.AlunosTurma@CadastrarNaTurma";
     }
