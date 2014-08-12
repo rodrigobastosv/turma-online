@@ -59,7 +59,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 //<editor-fold defaultstate="collapsed" desc="Conteúdos da turma">
     @View(name = "ConteudosTurma",
             title = "Conteúdos da turma",
-            members = "turma.nome;arquivo.nome,arquivo.tamanho;descricao;arquivo.dataEnvio",
+            members = "'Turma':turma.nome;arquivo.nome,arquivo.tamanho;descricao;arquivo.dataEnvio",
             //namedQuery = "From br.edu.Arquivo a where a.turma.id = :idTurma",//TODO criar namedQuery
             namedQuery = "ObterConteudosTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
