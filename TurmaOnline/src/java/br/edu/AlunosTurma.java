@@ -73,7 +73,7 @@ import util.jsf.Types;
     @View(name = "AlunosDaTurma",
             title = "Alunos da Turma",
             //header = "turma.nome",
-            members = "turma.nome,matricula,usuario.nome, quantidadeFalta, Ação[enviarEmailParaAluno()]",
+            members = "'Turma':turma.nome,matricula,'Aluno':usuario.nome, quantidadeFalta, Ação[enviarEmailParaAluno()]",
             namedQuery = "ObterAlunosDaTurma",
             params = {@Param(name = "idTurma", value = "#{idTurma}")},
             template = "@TABLE+@PAGE",
@@ -121,9 +121,11 @@ public class AlunosTurma implements Serializable {
     private String matricula;
     
     @Column(precision = 3)
+    @PropertyDescriptor(displayName = "Qtd. de Faltas")
     private Integer quantidadeFalta;
     
     @Column(precision = 3)
+    @PropertyDescriptor(displayName = "Qtd. de Atividades")
     private Integer quantidadeAtividade;
     
     public AlunosTurma(){
