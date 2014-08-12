@@ -113,9 +113,11 @@ public class AlunosTurma implements Serializable {
     private Turma turma = new Turma();
     
     @ManyToOne(optional = false)
+    @PropertyDescriptor(displayName = "Usuário")
     private Usuario usuario;
     
     @Column(length = 30)
+    @PropertyDescriptor(displayName = "Matrícula")
     private String matricula;
     
     @Column(precision = 3)

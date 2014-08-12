@@ -1,11 +1,6 @@
 package br.edu;
 
-import entities.Context;
-import entities.Repository;
-import entities.annotations.ActionDescriptor;
-import entities.annotations.Param;
 import entities.annotations.PropertyDescriptor;
-import entities.annotations.View;
 import entities.annotations.Views;
 import java.io.File;
 import java.io.Serializable;
@@ -20,10 +15,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Past;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
-import util.jsf.Types;
 
 /**
  *
@@ -51,6 +45,7 @@ public class Arquivo implements Serializable {
     private Date dataEnvio; 
     
     @ManyToOne(optional = false)
+    @PropertyDescriptor(displayName = "Usuário")
     private Usuario usuario;
     
     @PropertyDescriptor(displayName = "Nome do arquivo")
@@ -61,7 +56,7 @@ public class Arquivo implements Serializable {
     @PropertyDescriptor(displayName = "Tamanho em bytes")
     private Long tamanho;
     
-    @PropertyDescriptor(displayName = "Arquivo")
+    @Transient
     private File fileArquivo;
     
     public Arquivo(){
