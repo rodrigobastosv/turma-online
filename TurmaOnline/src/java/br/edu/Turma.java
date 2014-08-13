@@ -115,7 +115,8 @@ public class Turma implements Serializable {
     public String enviarEmailParaTurma(
             @ParameterDescriptor(displayName = "Assunto") String assunto,
             @ParameterDescriptor(displayName = "Mensagem")
-            @Editor(propertyType = PropertyType.MEMO) String mensagem) {
+            @Editor(propertyType = PropertyType.MEMO) String mensagem,
+            @ParameterDescriptor(displayName = "IdTurma") Integer idTurma) {
         //TODO pegar lista de email dos alunos da turma
         GMailBuilder.getInstance().
                 addToMail("vitor.rifane@gmail.com").
@@ -123,7 +124,13 @@ public class Turma implements Serializable {
                 setMessage(mensagem).
                 sendMail();
         
-        List<String> emailsAlunos = Repository.query("EmailsAlunos", id);
+        List<String> emailsAlunos;
+        
+        if(id != null){
+            emailsAlunos = Repository.query("EmailsAlunos", id);
+        } else {
+            emailsAlunos = Repository.query("EmailsAlunos", idTurma);
+        }
         //a forma é essa mesmo? enviar 1 email por vez?
         int i =0;
         for (String emailAluno : emailsAlunos) {

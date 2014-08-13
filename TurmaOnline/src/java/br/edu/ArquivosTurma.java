@@ -131,6 +131,10 @@ public class ArquivosTurma implements Serializable {
         ArquivosTurma arquivoTurmaNovo = new ArquivosTurma(arquivoNovo, turmaContext, descricao);
         Repository.save(arquivoTurmaNovo);
         
+        String assuntoEmailParaTurma = "Conteúdo novo na turma " + turmaContext.getNome();
+        String msgEmailParaTurma = "O Professor " + usu.getNome()+ " enviou um novo conteúdo para a turma " + turmaContext.getNome();
+        turmaContext.enviarEmailParaTurma(assuntoEmailParaTurma, msgEmailParaTurma, turmaContext.getId());
+        
         return "go:br.edu.Turma@MinhasTurmas";
     }        
     //</editor-fold>   
