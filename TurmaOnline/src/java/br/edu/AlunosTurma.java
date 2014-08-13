@@ -170,6 +170,10 @@ public class AlunosTurma implements Serializable {
             Repository.save(alunoTurma);
             turmaDoAluno.setQtdAlunos(turmaDoAluno.getQtdAlunos()+1);
             Repository.save(turmaDoAluno);
+            
+            String assuntoEmailParaProfessor = "Aluno novo na turma " + alunoTurma.getTurma().getNome();
+            String msgEmailParaProfessor = "O Aluno " + usu.getNome()+ " se cadastrou na turma " + alunoTurma.getTurma().getNome();
+            enviarEmailParaProfessor(assuntoEmailParaProfessor, msgEmailParaProfessor, alunoTurma.getTurma().getId());
         }else {
             throw new SecurityException("Turma não encontrada");
         }
@@ -200,9 +204,15 @@ public class AlunosTurma implements Serializable {
     public String enviarEmailParaProfessor(
             @ParameterDescriptor(displayName = "Assunto") String assunto,
             @ParameterDescriptor(displayName = "Mensagem")
-            @Editor(propertyType = PropertyType.MEMO) String mensagem) {
+            @Editor(propertyType = PropertyType.MEMO) String mensagem,
+            @ParameterDescriptor(displayName = "IdTurma") Integer idTurma) {
         
-        String emailProfessor = Repository.queryUnique("ObterEmailProfessorTurma", turma.getId());
+        String emailProfessor;
+        if(turma.getId() != null){
+            emailProfessor = Repository.queryUnique("ObterEmailProfessorTurma", turma.getId());
+        } else {
+            emailProfessor = Repository.queryUnique("ObterEmailProfessorTurma", idTurma);
+        }
         this.enviarEmail(emailProfessor, assunto, mensagem);
         
         return "E-mails enviado para o professor";
