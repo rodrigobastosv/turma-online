@@ -41,7 +41,7 @@ public class Arquivo implements Serializable {
     private byte[] arquivo;
     
     @Past
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataEnvio; 
     
     @ManyToOne(optional = false)
