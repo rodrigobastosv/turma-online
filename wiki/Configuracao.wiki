@@ -29,11 +29,13 @@ Turma Online é um projeto de uma aplicação java web pronto para ser utilizado
 <h3>Configurando outros bancos de dados</h3>
 •	Para utilizar outro BD basta adicionar o driver JDBC ao projeto, criar apenas o database (sem tabelas,...) e configurar o arquivo META-INF/context.xml. Abaixo temos um exemplo para o banco de dados Postgres. <br/>
 
+{{{
 25. <Resource auth="Container" type="javax.sql.DataSource"  <br/>
 26. driverClassName="org.postgresql.Driver"  <br/>
 27. name="jdbc/ds-blank"  <br/>
 28. username="postgres" password="postgres"  <br/>
 29. url="jdbc:postgresql://localhost:5433/postgres"/>  <br/>
+}}}
 
 
 <h3>Configurando múltiplos bancos de dados</h3>
