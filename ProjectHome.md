@@ -1,0 +1,3 @@
+Esse projeto propõe iniciar o desenvolvimento de um sistema colaborativo de acompanhamento de turmas para professores 100% desenvolvido por trabalhos acadêmicos, independente da instituição de ensino. Desta forma oferecendo um cenário real para a elaboração de novos trabalhos acadêmicos como trabalhos de conclusão de curso, monografias e artigos. Permitindo aos discentes abordarem diversos assuntos como testes, banco de dados, algoritmos de otimização, modelagem, metodologias de desenvolvimentos, dentre outros assuntos.
+
+O sistema tem como objetivo oferecer para professores, alunos e instituições de ensino uma ferramenta para o gerenciamento de conteúdo, turmas, notas, provas e outras necessidades para o gerenciamento das turmas.
